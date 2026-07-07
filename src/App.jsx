@@ -14,7 +14,7 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Cargar favoritos con información completa desde localStorage
+  
   useEffect(() => {
     const savedFavoritesData = localStorage.getItem('pokemonFavoritesData');
     if (savedFavoritesData) {
@@ -26,34 +26,34 @@ function App() {
     }
   }, []);
 
-  // Guardar favoritos completos cuando cambien
+  
   useEffect(() => {
     localStorage.setItem('pokemonFavoritesData', JSON.stringify(favoritesPokemon));
   }, [favoritesPokemon]);
 
-  // Guardar favorites IDs cuando cambien
+  
   useEffect(() => {
     localStorage.setItem('pokemonFavorites', JSON.stringify(favoriteIds));
   }, [favoriteIds]);
 
-  // Guardar bloqueados
+  
   useEffect(() => {
     localStorage.setItem('pokemonBlocked', JSON.stringify(blockedIds));
   }, [blockedIds]);
 
-  // Actualizar favoritos desde PokemonList
+  
   const handleUpdateFavorites = (favoritePokemonList, ids) => {
     setFavoritesPokemon(favoritePokemonList);
     setFavoriteIds(ids);
   };
 
-  // Remover favorito desde el sidebar (actualiza ambos)
+  
   const handleRemoveFavorite = (pokemonId) => {
     setFavoritesPokemon(prev => prev.filter(p => p.id !== pokemonId));
     setFavoriteIds(prev => prev.filter(id => id !== pokemonId));
   };
 
-  // Toggle bloqueo desde el sidebar
+  
   const handleToggleBlock = (pokemonId) => {
     setBlockedIds(prev =>
       prev.includes(pokemonId)
@@ -62,7 +62,7 @@ function App() {
     );
   };
 
-  // Actualizar bloqueados desde PokemonList
+  
   const handleUpdateBlocked = (newBlockedIds) => {
     setBlockedIds(newBlockedIds);
   };
