@@ -8,7 +8,10 @@ function PokemonList() {
   const [pokemon, setPokemon] = useState([]);
   const [filteredPokemon, setFilteredPokemon] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => {
+    const saved = localStorage.getItem('pokemonSearchTerm');
+    return saved ? saved : '';
+  });
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('pokemonFavorites');
     return saved ? JSON.parse(saved) : [];
@@ -27,6 +30,11 @@ function PokemonList() {
     checkHealth();
   }, []);
 
+  // Guardar término de búsqueda en localStorage
+  useEffect(() => {
+    localStorage.setItem('pokemonSearchTerm', searchTerm);
+  }, [searchTerm]);
+
   // Guardar favoritos en localStorage
   useEffect(() => {
     localStorage.setItem('pokemonFavorites', JSON.stringify(favorites));
@@ -37,9 +45,12 @@ function PokemonList() {
     localStorage.setItem('pokemonBlocked', JSON.stringify(blocked));
   }, [blocked]);
 
-  // Filtrar basado en búsqueda y favoritos
+  // Filtrar basado en búsqueda, bloqueados y favoritos
   useEffect(() => {
     let filtered = pokemon;
+
+    // Excluir bloqueados de los resultados
+    filtered = filtered.filter(p => !blocked.includes(p.id));
 
     // Filtrar por término de búsqueda
     if (searchTerm.trim() !== '') {
@@ -55,7 +66,7 @@ function PokemonList() {
     }
 
     setFilteredPokemon(filtered);
-  }, [pokemon, searchTerm, favorites, showOnlyFavorites]);
+  }, [pokemon, searchTerm, favorites, showOnlyFavorites, blocked]);
 
   const addNotification = (message, type = 'info', duration = 3000) => {
     const id = Math.random();
