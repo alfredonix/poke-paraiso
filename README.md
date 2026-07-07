@@ -48,7 +48,117 @@ npm run build
 npm run preview
 ```
 
-## 🔐 Seguridad de API
+## � Despliegue en Vercel
+
+### Opción 1: Desde GitHub (Recomendado)
+
+1. **Sube tu proyecto a GitHub**
+   ```bash
+   git add .
+   git commit -m "Proyecto PokeParaiso listo para deploy"
+   git push origin main
+   ```
+
+2. **Accede a Vercel**
+   - Ve a [vercel.com](https://vercel.com)
+   - Haz clic en "Sign Up" y conecta tu cuenta de GitHub
+
+3. **Importa tu proyecto**
+   - Haz clic en "New Project"
+   - Selecciona tu repositorio `poke-paraiso`
+   - Vercel detectará automáticamente Vite
+   - Haz clic en "Deploy"
+
+4. **Tu app estará en vivo en 2-3 minutos** ✨
+
+### Opción 2: Desde CLI (Vercel CLI)
+
+```bash
+# Instalar Vercel CLI globalmente
+npm install -g vercel
+
+# Deployar desde la carpeta del proyecto
+cd poke-paraiso
+vercel
+
+# Responde las preguntas interactivas
+# Tu app estará lista al instante
+```
+
+## 🚀 Despliegue en Netlify
+
+### Opción 1: Drag & Drop (Más simple)
+
+1. **Construye el proyecto**
+   ```bash
+   npm run build
+   ```
+
+2. **Ve a Netlify**
+   - Accede a [netlify.com](https://netlify.com)
+   - Haz clic en "Sign up" (gratis)
+
+3. **Drag & Drop la carpeta `dist`**
+   - Arrastra la carpeta `dist` a la zona de drop
+   - ¡Tu app estará en vivo en segundos!
+
+### Opción 2: Desde GitHub (Recomendado)
+
+1. **Sube a GitHub**
+   ```bash
+   git add .
+   git commit -m "Proyecto PokeParaiso listo para deploy"
+   git push origin main
+   ```
+
+2. **Conecta en Netlify**
+   - Ve a [netlify.com](https://netlify.com)
+   - Haz clic en "New site from Git"
+   - Selecciona GitHub y tu repositorio
+
+3. **Configuración automática**
+   - Netlify leerá `netlify.toml`
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Haz clic en "Deploy"
+
+4. **Tu sitio estará en vivo** 🎉
+
+### Opción 3: Netlify CLI
+
+```bash
+# Instalar Netlify CLI globalmente
+npm install -g netlify-cli
+
+# Deployar desde la carpeta del proyecto
+cd poke-paraiso
+netlify deploy
+
+# Selecciona las opciones y listo
+```
+
+## 📊 Comparación Vercel vs Netlify
+
+| Característica | Vercel | Netlify |
+|---|---|---|
+| Precio | Gratis | Gratis |
+| Deploy automático | Sí | Sí |
+| Dominio personalizado | Sí | Sí |
+| SSL/HTTPS | ✅ | ✅ |
+| Velocidad | ⚡⚡⚡ | ⚡⚡ |
+| Facilidad | Muy fácil | Muy fácil |
+
+**Recomendación**: Usa **Vercel** para mejor rendimiento, o **Netlify** si prefieres interfaz más simple.
+
+## 📱 Responsiveness
+
+✅ **Desktop** (1024px+): Layout con sidebar lateral
+✅ **Tablet** (768-1024px): Botón flotante, sidebar deslizable
+✅ **Mobile** (<768px): Botón flotante, sidebar desde abajo
+
+Prueba en diferentes tamaños: tu app se adapta automáticamente.
+
+## �🔐 Seguridad de API
 
 El sistema implementa múltiples capas de seguridad:
 
