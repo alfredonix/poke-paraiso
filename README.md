@@ -1,4 +1,4 @@
-# 🎀 Poke Paraiso
+#  Poke Paraiso
 
 Gestor web interactivo de Pokémon con búsqueda, favoritos y bloqueos. Integración segura con PokeAPI con caché, reintentos automáticos y manejo robusto de errores.
 

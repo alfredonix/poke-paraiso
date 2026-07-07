@@ -46,11 +46,12 @@ function PokemonList({ onUpdateFavorites, onUpdateBlocked, blockedIds = [], favo
   useEffect(() => {
     let filtered = pokemon;
 
-    // Excluir bloqueados de los resultados
-    filtered = filtered.filter(p => !blockedIds.includes(p.id));
-
-    // Filtrar por término de búsqueda
-    if (searchTerm.trim() !== '') {
+    // Si hay búsqueda: mostrar TODOS los Pokémon (incluyendo bloqueados) que coincidan
+    // Si NO hay búsqueda: excluir bloqueados por defecto
+    if (searchTerm.trim() === '') {
+      filtered = filtered.filter(p => !blockedIds.includes(p.id));
+    } else {
+      // Con búsqueda activa, mostrar todos pero filtrar por coincidencia
       filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.id.toString().includes(searchTerm)
