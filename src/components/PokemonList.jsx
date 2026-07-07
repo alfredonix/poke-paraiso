@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { fetchPokemonList } from '../services/pokemonService';
+import { fetchPokemonList, checkApiHealth } from '../services/pokemonService';
 import PokemonCard from './PokemonCard';
+import Notification from './Notification';
 import '../styles/PokemonList.css';
 
 function PokemonList() {
@@ -17,10 +18,13 @@ function PokemonList() {
     return saved ? JSON.parse(saved) : [];
   });
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [apiHealth, setApiHealth] = useState(null);
 
   // Cargar lista de Pokémon al montar
   useEffect(() => {
     loadPokemon();
+    checkHealth();
   }, []);
 
   // Guardar favoritos en localStorage
@@ -53,11 +57,43 @@ function PokemonList() {
     setFilteredPokemon(filtered);
   }, [pokemon, searchTerm, favorites, showOnlyFavorites]);
 
+  const addNotification = (message, type = 'info', duration = 3000) => {
+    const id = Math.random();
+    setNotifications(prev => [...prev, { id, message, type, duration }]);
+  };
+
+  const removeNotification = (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const checkHealth = async () => {
+    const health = await checkApiHealth();
+    setApiHealth(health);
+    
+    if (!health.isHealthy) {
+      addNotification(
+        'API de Pokémon no disponible. Usando datos en caché.',
+        'warning',
+        5000
+      );
+    }
+  };
+
   const loadPokemon = async () => {
     setLoading(true);
-    const data = await fetchPokemonList(150);
-    setPokemon(data);
-    setLoading(false);
+    try {
+      const data = await fetchPokemonList(150);
+      if (data.length === 0) {
+        addNotification('No se pudieron cargar los Pokémon', 'error', 5000);
+      } else {
+        addNotification(`Se cargaron ${data.length} Pokémon correctamente`, 'success', 2000);
+      }
+      setPokemon(data);
+    } catch (error) {
+      addNotification('Error al cargar los Pokémon', 'error', 5000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleFavorite = (pokemonId) => {
@@ -82,11 +118,50 @@ function PokemonList() {
   };
 
   if (loading) {
-    return <div className="loading">Cargando Pokémon...</div>;
+    return (
+      <div className="pokemon-list-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Conectando con Pokémon API...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="pokemon-list-container">
+      {/* Notificaciones */}
+      {notifications.length > 0 && (
+        <div className="notification-container">
+          {notifications.map(notif => (
+            <Notification
+              key={notif.id}
+              message={notif.message}
+              type={notif.type}
+              duration={notif.duration}
+              onClose={() => removeNotification(notif.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Estado de la API */}
+      {apiHealth && !apiHealth.isHealthy && (
+        <div className="api-status api-status-warning">
+          <span className="status-icon">⚠️</span>
+          <span className="status-text">API fuera de servicio. Mostrando datos en caché.</span>
+          <button
+            className="status-retry"
+            onClick={() => {
+              checkHealth();
+              loadPokemon();
+            }}
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
       <div className="controls">
         <div className="search-container">
           <input
@@ -121,6 +196,16 @@ function PokemonList() {
           >
             Limpiar filtros
           </button>
+          <button
+            className="filter-btn"
+            onClick={() => {
+              loadPokemon();
+              checkHealth();
+            }}
+            title="Recargar datos"
+          >
+            🔄 Recargar
+          </button>
         </div>
 
         <div className="stats">
@@ -132,7 +217,7 @@ function PokemonList() {
 
       {filteredPokemon.length === 0 ? (
         <div className="no-results">
-          No se encontraron Pokémon
+          {pokemon.length === 0 ? 'No hay Pokémon disponibles' : 'No se encontraron Pokémon'}
         </div>
       ) : (
         <div className="pokemon-grid">

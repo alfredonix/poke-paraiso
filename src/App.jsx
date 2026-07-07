@@ -5,8 +5,8 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🎀 Poke Paraiso 🎀</h1>
-        <p className="app-subtitle">Gestor de Pokémon - Busca, Favoritos y Bloqueos</p>
+        <h1> PokeParaiso </h1>
+        <p className="app-subtitle">Gestor de Pokémon - Busca a tus pokemones favoritos</p>
       </header>
       <main className="app-main">
         <PokemonList />

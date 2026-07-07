@@ -1,16 +1,182 @@
-# React + Vite
+# 🎀 Poke Paraiso
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Gestor web interactivo de Pokémon con búsqueda, favoritos y bloqueos. Integración segura con PokeAPI con caché, reintentos automáticos y manejo robusto de errores.
 
-Currently, two official plugins are available:
+## ✨ Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **🔍 Búsqueda en Tiempo Real**: Busca Pokémon por nombre o ID
+- **⭐ Sistema de Favoritos**: Marca tus Pokémon favoritos (persistente)
+- **🚫 Bloqueo de Elementos**: Oculta Pokémon que no te interesan
+- **🔒 Conexión Segura a API**: 
+  - Timeout automático (10s)
+  - Reintentos inteligentes (hasta 3 veces)
+  - Rate limiting para evitar sobrecargas
+  - Caché en memoria y localStorage
+  - Validación de datos
+- **⚡ Rendimiento Optimizado**: 
+  - Caché de respuestas
+  - Carga progresiva
+  - Lazy loading
+- **📱 Diseño Responsivo**: Funciona en desktop, tablet y móvil
+- **🎨 UI Moderna**: Interfaz visual atractiva con animaciones
 
-## React Compiler
+## 🚀 Inicio Rápido
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Requisitos
+- Node.js 16+
+- npm 7+
 
-## Expanding the Oxlint configuration
+### Instalación
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+# Clonar o descargar el proyecto
+cd poke-paraiso
+
+# Instalar dependencias
+npm install
+
+# Iniciar en desarrollo
+npm run dev
+```
+
+Abre `http://localhost:5173` en tu navegador.
+
+## 📦 Build para Producción
+
+```bash
+npm run build
+npm run preview
+```
+
+## 🔐 Seguridad de API
+
+El sistema implementa múltiples capas de seguridad:
+
+- ✅ **Validación de Respuestas**: Verifica estructura de datos
+- ✅ **Timeouts**: Cancela solicitudes que tarden más de 10s
+- ✅ **Reintentos Automáticos**: Reintenta hasta 3 veces en caso de fallos
+- ✅ **Rate Limiting**: Controla velocidad de solicitudes
+- ✅ **Caché Inteligente**: Guarda datos para acceso sin conexión
+- ✅ **Manejo de Errores**: Mensajes claros para el usuario
+
+Ver [API_SECURITY.md](API_SECURITY.md) para documentación completa.
+
+## 📁 Estructura del Proyecto
+
+```
+poke-paraiso/
+├── src/
+│   ├── components/           # Componentes React
+│   │   ├── PokemonCard.jsx   # Tarjeta individual
+│   │   ├── PokemonList.jsx   # Lista y gestor
+│   │   └── Notification.jsx  # Sistema de notificaciones
+│   ├── services/             # Lógica de negocio
+│   │   ├── pokemonService.js # API con seguridad
+│   │   ├── cacheService.js   # Gestión de caché
+│   │   ├── errorHandler.js   # Manejo de errores
+│   │   └── rateLimiter.js    # Control de velocidad
+│   ├── styles/               # Estilos CSS
+│   │   ├── PokemonCard.css
+│   │   ├── PokemonList.css
+│   │   └── Notification.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── public/                   # Archivos estáticos
+├── .env                      # Variables de entorno (ejemplo)
+├── .env.local                # Variables de entorno (local)
+├── vite.config.js
+├── package.json
+└── API_SECURITY.md          # Documentación de seguridad
+```
+
+## ⚙️ Configuración
+
+Las variables de entorno en `.env.local` controlan el comportamiento:
+
+```env
+VITE_POKE_API_BASE=https://pokeapi.co/api/v2
+VITE_API_TIMEOUT=10000              # Timeout en ms
+VITE_MAX_RETRIES=3                  # Número de reintentos
+VITE_CACHE_DURATION=3600000         # Caché por 1 hora
+VITE_RATE_LIMIT_DELAY=100           # Delay entre requests (ms)
+```
+
+## 🛠️ Scripts
+
+```bash
+npm run dev      # Iniciar servidor de desarrollo
+npm run build    # Build para producción
+npm run preview  # Vista previa del build
+npm run lint     # Ejecutar oxlint
+```
+
+## 📊 Estadísticas
+
+- **150 Pokémon** cargados inicialmente
+- **Búsqueda** por nombre e ID
+- **Favoritos** ilimitados
+- **Bloqueos** ilimitados
+- **Caché** por 1 hora por defecto
+
+## 🎯 Casos de Uso
+
+### Búsqueda
+1. Escribe en el campo de búsqueda
+2. Filtra por nombre: "pikachu"
+3. O filtra por ID: "#25"
+
+### Favoritos
+1. Haz clic en la estrella (⭐) en una tarjeta
+2. Ver solo favoritos con el botón "★ Favoritos"
+3. Los favoritos se guardan automáticamente
+
+### Bloqueo
+1. Haz clic en el símbolo de bloqueo (🚫)
+2. El Pokémon se muestra con opacidad reducida
+3. Los bloqueos se guardan automáticamente
+
+## 🌐 API Utilizada
+
+[PokeAPI v2](https://pokeapi.co/) - Libre y de código abierto
+
+- ✅ Sin autenticación requerida
+- ✅ Rate limit generoso
+- ✅ Datos en tiempo real
+- ✅ Datos históricos disponibles
+
+## 🐛 Troubleshooting
+
+### "API fuera de servicio"
+- Verifica tu conexión a internet
+- Haz clic en el botón "Reintentar"
+- Los datos se mostrarán desde el caché local
+
+### Datos no se actualizan
+- Limpia el caché en DevTools → Application → LocalStorage
+- O cambia `VITE_CACHE_DURATION` en `.env.local`
+
+### Respuestas lentas
+- Aumenta `VITE_API_TIMEOUT` en `.env.local`
+- Reduce `VITE_RATE_LIMIT_DELAY` (úsalo con cuidado)
+
+## 📝 Licencia
+
+MIT - Libre para usar y modificar
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+1. Fork el proyecto
+2. Crea una rama (`git checkout -b feature/mejora`)
+3. Commit cambios (`git commit -m 'Agrega mejora'`)
+4. Push a la rama (`git push origin feature/mejora`)
+5. Abre un Pull Request
+
+## 📞 Soporte
+
+Para reportar problemas o sugerencias, por favor abre un issue en el repositorio.
+
+---
+
+Hecho con ❤️ para la comunidad Pokémon
