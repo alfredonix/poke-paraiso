@@ -4,7 +4,7 @@ import PokemonCard from './PokemonCard';
 import Notification from './Notification';
 import '../styles/PokemonList.css';
 
-function PokemonList() {
+function PokemonList({ onUpdateFavorites, onUpdateBlocked, blockedIds = [], favoriteIds = [] }) {
   const [pokemon, setPokemon] = useState([]);
   const [filteredPokemon, setFilteredPokemon] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,17 +12,15 @@ function PokemonList() {
     const saved = localStorage.getItem('pokemonSearchTerm');
     return saved ? saved : '';
   });
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('pokemonFavorites');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [blocked, setBlocked] = useState(() => {
-    const saved = localStorage.getItem('pokemonBlocked');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [localFavoriteIds, setLocalFavoriteIds] = useState(favoriteIds);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [apiHealth, setApiHealth] = useState(null);
+
+  // Sincronizar favoriteIds prop con estado local
+  useEffect(() => {
+    setLocalFavoriteIds(favoriteIds);
+  }, [favoriteIds]);
 
   // Cargar lista de Pokémon al montar
   useEffect(() => {
@@ -35,22 +33,21 @@ function PokemonList() {
     localStorage.setItem('pokemonSearchTerm', searchTerm);
   }, [searchTerm]);
 
-  // Guardar favoritos en localStorage
+  // Guardar favoritos IDs en localStorage y actualizar App con datos completos
   useEffect(() => {
-    localStorage.setItem('pokemonFavorites', JSON.stringify(favorites));
-  }, [favorites]);
-
-  // Guardar bloqueados en localStorage
-  useEffect(() => {
-    localStorage.setItem('pokemonBlocked', JSON.stringify(blocked));
-  }, [blocked]);
+    localStorage.setItem('pokemonFavorites', JSON.stringify(localFavoriteIds));
+    
+    // Obtener datos completos de favoritos
+    const favoritePokemonData = pokemon.filter(p => localFavoriteIds.includes(p.id));
+    onUpdateFavorites(favoritePokemonData, localFavoriteIds);
+  }, [localFavoriteIds, pokemon, onUpdateFavorites]);
 
   // Filtrar basado en búsqueda, bloqueados y favoritos
   useEffect(() => {
     let filtered = pokemon;
 
     // Excluir bloqueados de los resultados
-    filtered = filtered.filter(p => !blocked.includes(p.id));
+    filtered = filtered.filter(p => !blockedIds.includes(p.id));
 
     // Filtrar por término de búsqueda
     if (searchTerm.trim() !== '') {
@@ -62,11 +59,11 @@ function PokemonList() {
 
     // Filtrar solo favoritos si está activado
     if (showOnlyFavorites) {
-      filtered = filtered.filter(p => favorites.includes(p.id));
+      filtered = filtered.filter(p => localFavoriteIds.includes(p.id));
     }
 
     setFilteredPokemon(filtered);
-  }, [pokemon, searchTerm, favorites, showOnlyFavorites, blocked]);
+  }, [pokemon, searchTerm, localFavoriteIds, showOnlyFavorites, blockedIds]);
 
   const addNotification = (message, type = 'info', duration = 3000) => {
     const id = Math.random();
@@ -108,7 +105,7 @@ function PokemonList() {
   };
 
   const toggleFavorite = (pokemonId) => {
-    setFavorites(prev =>
+    setLocalFavoriteIds(prev =>
       prev.includes(pokemonId)
         ? prev.filter(id => id !== pokemonId)
         : [...prev, pokemonId]
@@ -116,11 +113,11 @@ function PokemonList() {
   };
 
   const toggleBlock = (pokemonId) => {
-    setBlocked(prev =>
-      prev.includes(pokemonId)
-        ? prev.filter(id => id !== pokemonId)
-        : [...prev, pokemonId]
-    );
+    const newBlockedIds = blockedIds.includes(pokemonId)
+      ? blockedIds.filter(id => id !== pokemonId)
+      : [...blockedIds, pokemonId];
+    
+    onUpdateBlocked(newBlockedIds);
   };
 
   const clearFilters = () => {
@@ -198,7 +195,7 @@ function PokemonList() {
             className={`filter-btn ${showOnlyFavorites ? 'active' : ''}`}
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
           >
-            ★ Favoritos ({favorites.length})
+            ★ Favoritos ({localFavoriteIds.length})
           </button>
           <button
             className="filter-btn"
@@ -221,8 +218,8 @@ function PokemonList() {
 
         <div className="stats">
           <span>Total: {filteredPokemon.length}</span>
-          <span>Favoritos: {favorites.length}</span>
-          <span>Bloqueados: {blocked.length}</span>
+          <span>Favoritos: {localFavoriteIds.length}</span>
+          <span>Bloqueados: {blockedIds.length}</span>
         </div>
       </div>
 
@@ -236,8 +233,8 @@ function PokemonList() {
             <PokemonCard
               key={p.id}
               pokemon={p}
-              isFavorite={favorites.includes(p.id)}
-              isBlocked={blocked.includes(p.id)}
+              isFavorite={localFavoriteIds.includes(p.id)}
+              isBlocked={blockedIds.includes(p.id)}
               onToggleFavorite={toggleFavorite}
               onToggleBlock={toggleBlock}
             />

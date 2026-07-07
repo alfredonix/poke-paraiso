@@ -35,9 +35,22 @@ body {
   opacity: 0.9;
 }
 
-.app-main {
-  max-width: 1400px;
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+  max-width: 1800px;
   margin: 0 auto;
+  align-items: start;
+}
+
+.app-main {
+  width: 100%;
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 20px;
 }
 
 @keyframes slideDown {
@@ -51,6 +64,25 @@ body {
   }
 }
 
+/* Desktop (>1024px) */
+@media (min-width: 1025px) {
+  .app-layout {
+    grid-template-columns: 1fr 350px;
+  }
+}
+
+/* Tablet (769px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+}
+
+/* Mobile (<768px) */
 @media (max-width: 768px) {
   .app {
     padding: 10px;
@@ -62,5 +94,14 @@ body {
 
   .app-subtitle {
     font-size: 1rem;
+  }
+
+  .app-layout {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .app-sidebar {
+    display: none;
   }
 }

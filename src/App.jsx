@@ -1,16 +1,98 @@
+import { useState, useEffect } from "react";
 import "./App.css";
 import PokemonList from "./components/PokemonList";
+import SidebarFavorites from "./components/SidebarFavorites";
 
 function App() {
+  const [favoritesPokemon, setFavoritesPokemon] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState(() => {
+    const saved = localStorage.getItem('pokemonFavorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [blockedIds, setBlockedIds] = useState(() => {
+    const saved = localStorage.getItem('pokemonBlocked');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Cargar favoritos con información completa desde localStorage
+  useEffect(() => {
+    const savedFavoritesData = localStorage.getItem('pokemonFavoritesData');
+    if (savedFavoritesData) {
+      try {
+        setFavoritesPokemon(JSON.parse(savedFavoritesData));
+      } catch (error) {
+        console.error('Error loading favorites data:', error);
+      }
+    }
+  }, []);
+
+  // Guardar favoritos completos cuando cambien
+  useEffect(() => {
+    localStorage.setItem('pokemonFavoritesData', JSON.stringify(favoritesPokemon));
+  }, [favoritesPokemon]);
+
+  // Guardar favorites IDs cuando cambien
+  useEffect(() => {
+    localStorage.setItem('pokemonFavorites', JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
+
+  // Guardar bloqueados
+  useEffect(() => {
+    localStorage.setItem('pokemonBlocked', JSON.stringify(blockedIds));
+  }, [blockedIds]);
+
+  // Actualizar favoritos desde PokemonList
+  const handleUpdateFavorites = (favoritePokemonList, ids) => {
+    setFavoritesPokemon(favoritePokemonList);
+    setFavoriteIds(ids);
+  };
+
+  // Remover favorito desde el sidebar (actualiza ambos)
+  const handleRemoveFavorite = (pokemonId) => {
+    setFavoritesPokemon(prev => prev.filter(p => p.id !== pokemonId));
+    setFavoriteIds(prev => prev.filter(id => id !== pokemonId));
+  };
+
+  // Toggle bloqueo desde el sidebar
+  const handleToggleBlock = (pokemonId) => {
+    setBlockedIds(prev =>
+      prev.includes(pokemonId)
+        ? prev.filter(id => id !== pokemonId)
+        : [...prev, pokemonId]
+    );
+  };
+
+  // Actualizar bloqueados desde PokemonList
+  const handleUpdateBlocked = (newBlockedIds) => {
+    setBlockedIds(newBlockedIds);
+  };
+
   return (
     <div className="app">
       <header className="app-header">
         <h1> PokeParaiso </h1>
         <p className="app-subtitle">Gestor de Pokémon - Busca a tus pokemones favoritos</p>
       </header>
-      <main className="app-main">
-        <PokemonList />
-      </main>
+
+      <div className="app-layout">
+        <main className="app-main">
+          <PokemonList 
+            onUpdateFavorites={handleUpdateFavorites}
+            onUpdateBlocked={handleUpdateBlocked}
+            blockedIds={blockedIds}
+            favoriteIds={favoriteIds}
+          />
+        </main>
+
+        <aside className="app-sidebar">
+          <SidebarFavorites
+            favoritesPokemon={favoritesPokemon}
+            onRemoveFavorite={handleRemoveFavorite}
+            onToggleBlock={handleToggleBlock}
+            blockedIds={blockedIds}
+          />
+        </aside>
+      </div>
     </div>
   );
 }
